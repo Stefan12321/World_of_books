@@ -53,6 +53,10 @@ class Book(models.Model):
     isbn = models.CharField(max_length=13,
                             help_text="Must be 13 symbols in length")
 
+    def display_author(self):
+        return ', '.join([author.last_name for author in self.author.all()])
+    display_author.short_description = 'Authors'
+
     def __str__(self):
         return self.title
 
