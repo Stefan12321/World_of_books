@@ -16,8 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from catalog import views
+from django.urls import include, re_path
 
 urlpatterns = [
-    path('', views.index, name='home'),
+    path('', views.index, name='index'),
     path('admin/', admin.site.urls),
+    path('test/', views.test),
+    path('accounts/', include('django.contrib.auth.urls')),
+    re_path(r'^books/$', views.BookListView.as_view(), name='books'),
+    re_path(r'^book/(?P<pk>\d+)$', views.BookDetailView.as_view(), name='book-detail'),
+    re_path(r'^authors/$', views.AuthorListView.as_view(), name='authors')
 ]
