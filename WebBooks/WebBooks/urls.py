@@ -14,16 +14,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
 from catalog import views
-from django.urls import include, re_path
+from django.urls import include, re_path, path
 # TODO Check reset password
 urlpatterns = [
     path('', views.index, name='index'),
     path('admin/', admin.site.urls),
-    path('test/', views.test),
+    # path('test/', views.test),
     path('accounts/', include('django.contrib.auth.urls')),
+    # path('reset/confirm/<uidb64>/<token>/', views.empty_view, name="password_reset_confirm"),
     re_path(r'^books/$', views.BookListView.as_view(), name='books'),
     re_path(r'^book/(?P<pk>\d+)$', views.BookDetailView.as_view(), name='book-detail'),
     re_path(r'^authors/$', views.AuthorListView.as_view(), name='authors'),
+    path(r'^mybooks/$', views.LoanedBooksByUserListView.as_view(), name='my-borrowed'),
+
 ]

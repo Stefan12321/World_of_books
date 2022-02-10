@@ -1,0 +1,29 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+    <h3>Authors list in DB</h3>
+        <table>
+            <thead><th>Id</th><th>----First name----</th><th>Last name</th></thead>
+
+        {% if author %}
+            {% for author in author.all%}
+                <tr>
+                    <td>{{author.id}}</td>
+                    <td>{{author.first_name}}</td>
+                    <td>{{author.last_name}}</td>
+                    <td><a href="/edit1/{{author.id}}">Change</a> ,
+                        <a href="/delete/{{author.id}}">Remove</a></td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <p>DB has not any authors</p>
+        {% endif %}
+        </table>
+        <h3>Add authors to DB</h3>
+        <form method="post" action="/create/">
+            {% csrf_token %}
+            <table>
+                {{ form }}
+            </table>
+            <input type="submit", value="Save">
+        </form>
+{% endblock content %}

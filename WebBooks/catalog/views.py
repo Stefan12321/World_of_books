@@ -1,7 +1,9 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import *
+from .forms import AuthorsForm
 from django.views import generic
 from .models import Book, Author, BookInstance, Genre
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 def index(request):
@@ -24,9 +26,10 @@ def reset_password(request):
     return render(request, 'registration/reset_password.html')
 
 
-def test(request):
-    return render(request, 'Dashboard Template · Bootstrap v5.1.html')
-
+def authors_add(request):
+    author = Author.objects.all()
+    authorsform = AuthorsForm()
+    return render(request, 'catalog/author_add.html', {"form": authorsform, "author": author})
 
 class BookListView(generic.ListView):
     model = Book
@@ -40,3 +43,14 @@ class BookDetailView(generic.DetailView):
 class AuthorListView(generic.ListView):
     model = Author
     paginate_by = 4
+
+
+class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
+    """Универсальный класс представления списка книг,
+    находящихся в заказе у текущего пользователя. """
+    model = BookInstance
+    template_name ='catalog/bookinstance_list_borrowed_user.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='1').order_by('due_back')
