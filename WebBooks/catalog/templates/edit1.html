@@ -1,0 +1,24 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+    {% if user.is_staff %}
+        <h3>List of authors in DB</h3>
+        <h4>{{author.first_name}} {{author.last_name}}</h4>
+
+            <form method="POST">
+                {% csrf_token %}
+                <p><label>Change first name</label><br>
+                    <input type="text" name="first_name", value="{{author.first_name}}">
+                </p>
+                <p><label>Change last name</label><br>
+                    <input type="text" name="last_name", value="{{author.last_name}}">
+                </p>
+                <p><label>Change date of birth</label><br>
+                    <input type="date" name="date_of_birth", value="{{author.date_of_birth|date:'Y-m-d'}}">
+                </p>
+                <p><label>Change date of death</label><br>
+                    <input type="date" name="date_of_death", value="{{author.date_of_death|date:'Y-m-d'}}">
+                </p>
+                <input type="submit", value="Save">
+            </form>
+        {% endif %}
+{% endblock content %}

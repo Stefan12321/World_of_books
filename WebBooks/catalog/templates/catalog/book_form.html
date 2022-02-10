@@ -1,0 +1,12 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+    {% if user.is_staff %}
+        <form action="" method="post">
+            {% csrf_token %}
+            <table>
+                {{ form.as_table }}
+            </table>
+            <input type="submit", text="Save">
+        </form>
+    {% endif %}
+{% endblock content %}

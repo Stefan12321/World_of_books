@@ -4,6 +4,9 @@ from .forms import AuthorsForm
 from django.views import generic
 from .models import Book, Author, BookInstance, Genre
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from .models import Book
 
 
 def index(request):
@@ -24,6 +27,41 @@ def reset_password(request):
     if request.method == "POST":
         print('reset password')
     return render(request, 'registration/reset_password.html')
+
+
+def create(request):
+    if request.method == "POST":
+        author = Author()
+        author.first_name = request.POST.get("first_name")
+        author.last_name = request.POST.get("last_name")
+        author.date_of_birth = request.POST.get("date_of_birth")
+        author.date_of_death = request.POST.get("date_of_death")
+        author.save()
+        return HttpResponseRedirect("/authors_add/")
+
+
+def delete(request, id):
+    try:
+        author = Author.objects.get(id=id)
+        author.delete()
+        return HttpResponseRedirect("/authors_add/")
+    except Author.DoesNotExist:
+        return HttpResponseNotFound("<h2>Author not found</h2>")
+
+
+def edit1(request, id):
+    author = Author.objects.get(id=id)
+
+    if request.method == "POST":
+        author.first_name = request.POST.get("first_name")
+        author.last_name = request.POST.get("last_name")
+        author.date_of_birth = request.POST.get("date_of_birth")
+        author.date_of_death = request.POST.get("date_of_death")
+        author.save()
+        return HttpResponseRedirect("/authors_add/")
+    else:
+        print(author.date_of_birth)
+        return render(request, "edit1.html", {"author": author})
 
 
 def authors_add(request):
@@ -54,3 +92,20 @@ class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         return BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='1').order_by('due_back')
+
+
+class BookCreate(CreateView):
+    model = Book
+    fields = '__all__'
+    success_url = reverse_lazy('books')
+
+
+class BookUpdate(UpdateView):
+    model = Book
+    fields = '__all__'
+    success_url = reverse_lazy('books')
+
+
+class BookDelete(DeleteView):
+    model = Book
+    success_url = reverse_lazy('books')
