@@ -17,6 +17,9 @@ from django.contrib import admin
 from catalog import views
 from django.urls import include, re_path, path
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('', views.index, name='index'),
     path('admin/', admin.site.urls),
@@ -33,3 +36,4 @@ urlpatterns = [
     re_path(r'^book/update/(?P<pk>\d+)$', views.BookUpdate.as_view(), name="book_update"),
     re_path(r'^book/delete/(?P<pk>\d+)$', views.BookDelete.as_view(), name="book_delete"),
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

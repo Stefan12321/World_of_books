@@ -9,6 +9,7 @@ from django.urls import reverse_lazy
 from .models import Book
 
 
+
 def index(request):
     num_books = Book.objects.all().count()
     num_instances = BookInstance.objects.all().count()
@@ -69,9 +70,10 @@ def authors_add(request):
     authorsform = AuthorsForm()
     return render(request, 'catalog/author_add.html', {"form": authorsform, "author": author})
 
+
 class BookListView(generic.ListView):
     model = Book
-    paginate_by = 3
+    paginate_by = 9
 
 
 class BookDetailView(generic.DetailView):

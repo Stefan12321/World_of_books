@@ -38,6 +38,9 @@ class Book(models.Model):
     title = models.CharField(max_length=200,
                              help_text="Enter a book name",
                              verbose_name="Book name")
+    price = models.FloatField(help_text="Enter price of this book",
+                              verbose_name='Book price',
+                              default=0)
     genre = models.ForeignKey('Genre',
                               on_delete=models.CASCADE,
                               help_text="Enter a book genre",
@@ -55,6 +58,8 @@ class Book(models.Model):
     isbn = models.CharField(max_length=13,
                             help_text="Must be 13 symbols in length")
 
+    image = models.ImageField(null=True, blank=True, upload_to="images/")
+
     def display_author(self):
         return ', '.join([author.last_name for author in self.author.all()])
     display_author.short_description = 'Authors'
@@ -64,6 +69,9 @@ class Book(models.Model):
 
     def get_absolute_url(self):
         return reverse('book-detail', args=[str(self.id)])
+
+    def get_image(self):
+        return f'/media/{self.image}/'
 
 
 class Status(models.Model):
