@@ -74,6 +74,18 @@ class Book(models.Model):
         return f'/media/{self.image}/'
 
 
+class Cart(models.Model):
+    user = models.ForeignKey(User,
+                                on_delete=models.CASCADE,
+                                )
+    books = models.ForeignKey(Book,
+                              on_delete=models.CASCADE,)
+    quantity = models.IntegerField('quantity',
+                                   blank=False,
+                                   default=1,
+                                   help_text='Quantity books in order')
+
+
 class Status(models.Model):
     name = models.CharField(max_length=20, help_text="Enter a book status", verbose_name="Book status")
 

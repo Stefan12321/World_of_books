@@ -1,0 +1,83 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+{% block sidebar %}
+  <p>
+    <a class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample"
+        aria-expanded="false" aria-controls="collapseWidthExample">
+        <img class="bi" width="24" height="24" role="img" aria-label="Home"
+            src="{% static 'bootstrap-icons-1.8.1/list.svg' %}" alt="">
+    </a>
+</p>
+<div class="w-auto">
+    <div class=" collapse collapse-horizontal" id="collapseWidthExample">
+        <div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 200px;">
+            <a href="/"
+                class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+                <svg class="bi me-2" width="40" height="32">
+                    <use xlink:href="#bootstrap"></use>
+                </svg>
+                <span class="fs-4">Sidebar</span>
+            </a>
+            <hr>
+            <ul class="list-unstyled ps-0">
+                <li class="mb-1">
+                  <button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+                    <img src="{% static 'bootstrap-icons-1.8.1/chevron-down.svg' %}" alt="SomeAlternateText">
+                    Genres
+                  </button>
+                  <div class="collapse show" id="home-collapse" style="">
+                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                        {% for genre in genres %}
+                            <li><input type="checkbox" value="{{genre.name}}">{{genre.name}}</li>
+                        {% endfor %}
+                    </ul>
+                  </div>
+                </li>
+                <li class="mb-1">
+                  <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
+                    <img src="{% static 'bootstrap-icons-1.8.1/chevron-down.svg' %}" alt="SomeAlternateText">
+                    Authors
+                  </button>
+                  <div class="collapse" id="dashboard-collapse" style="">
+                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                        {% for author in authors %}
+                        <li><input type="checkbox" value="{{author.first_name}}">{{author.first_name}} {{author.last_name}}</li>
+                    {% endfor %}
+                    </ul>
+                  </div>
+                </li>
+                <li class="mb-1">
+                  <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
+                    <img src="{% static 'bootstrap-icons-1.8.1/chevron-down.svg' %}" alt="SomeAlternateText">
+                    Orders
+                  </button>
+                  <div class="collapse" id="orders-collapse">
+                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                      <li><a href="#" class="link-dark rounded">New</a></li>
+                      <li><a href="#" class="link-dark rounded">Processed</a></li>
+                      <li><a href="#" class="link-dark rounded">Shipped</a></li>
+                      <li><a href="#" class="link-dark rounded">Returned</a></li>
+                    </ul>
+                  </div>
+                </li>
+                <li class="border-top my-3"></li>
+                <li class="mb-1">
+                  <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
+                    Account
+                  </button>
+                  <div class="collapse" id="account-collapse">
+                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                      <li><a href="#" class="link-dark rounded">New...</a></li>
+                      <li><a href="#" class="link-dark rounded">Profile</a></li>
+                      <li><a href="#" class="link-dark rounded">Settings</a></li>
+                      <li><a href="#" class="link-dark rounded">Sign out</a></li>
+                    </ul>
+                  </div>
+                </li>
+              </ul>
+            <hr>
+        </div>
+    </div>
+</div>
+
+{% endblock sidebar %}

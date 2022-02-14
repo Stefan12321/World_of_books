@@ -1,21 +1,28 @@
-{% extends "base_generic.html" %}
+{% extends "base_catalog.html" %}
 
 {% block content %}
-<div class="container bootstrap snipets">
+<div class="container bootstrap snipets"> 
     <h1 class="text-center text-muted">List of books</h1>
     {% if book_list %}
-    <ul>
-        <div class="row flow-offset-1">
-            {% for book in book_list %}
+    <ul class="gap-3">
+        <div class="row gy-3 flow-offset-1 ">
+            {% for book in page_obj %}
             
-            <div class="col-xs-6 col-md-4">
-                <div class="product tumbnail thumbnail-3"><a href="{{ book.get_absolute_url }}"><img src="{{ book.get_image }}" alt="" height=320 width=212></a>
-                    <div class="caption">
-                    <h6><a href="{{ book.get_absolute_url }}">{{ book.title }}</a></h6><span class="price">
-                        </span><span class="price sale">${{ book.price }}</span>
+             <div class="col-xs-6 col-md-4">
+                <div class="product tumbnail thumbnail-3">
+                    <div class="card" style="width: 14rem;">
+                        <a href="{{ book.get_absolute_url }}">
+                            <img  class="card-img-top" src="{{ book.get_image }}" alt="" height=320 width=212>
+                        </a>
+                        <div class="card-body">
+                            <div class="caption">
+                            <h6>{{ book.title }}</h6><span class="price">
+                                </span><span class="price sale">${{ book.price }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div> 
+            </div>  
             {% endfor %}
         
         </div>
@@ -23,5 +30,5 @@
     {% else %}
     <p>Databaase has no books</p>
     {% endif %}
-</div>
+ </div> 
 {% endblock %}

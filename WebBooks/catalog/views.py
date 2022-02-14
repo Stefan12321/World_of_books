@@ -2,12 +2,13 @@ from django.shortcuts import render
 from django.http import *
 from .forms import AuthorsForm
 from django.views import generic
-from .models import Book, Author, BookInstance, Genre
+from .models import Book, Author, BookInstance, Genre, Cart
+from django.core.paginator import Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import Book
-
 
 
 def index(request):
@@ -28,6 +29,30 @@ def reset_password(request):
     if request.method == "POST":
         print('reset password')
     return render(request, 'registration/reset_password.html')
+
+
+def cart(request):
+    if request.method == "POST":
+        if request.POST.get('delete'):
+            book = Cart.objects.get(id=request.POST.get('delete'))
+            book.delete()
+        elif request.POST.get('increment'):
+            book = Cart.objects.get(id=request.POST.get('increment'))
+            book.quantity = book.quantity + 1
+            book.save()
+        elif request.POST.get('decrement'):
+            book = Cart.objects.get(id=request.POST.get('decrement'))
+            if book.quantity > 1:
+                book.quantity = book.quantity - 1
+                book.save()
+        elif request.POST.get('quantity'):
+            print(request.POST)
+            book = Cart.objects.get(id=request.POST.get('book_id'))
+            if int(request.POST.get('book_id')) > 1:
+                book.quantity = int(request.POST.get('quantity'))
+                book.save()
+    cart = Cart.objects.filter(user__exact=request.user.id)
+    return render(request, 'catalog/cart.html', context={'cart': cart})
 
 
 def create(request):
@@ -71,6 +96,21 @@ def authors_add(request):
     return render(request, 'catalog/author_add.html', {"form": authorsform, "author": author})
 
 
+def book_list(request):
+    books = Book.objects.all()
+    genres = Genre.objects.all()
+    authors = Author.objects.all()
+    paginator = Paginator(books, 24)  # Show 6 books per page.
+    is_paginated = True if paginator.num_pages > 1 else False
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'catalog/book_list.html', {'book_list': books,
+                                                      'genres': genres,
+                                                      'authors': authors,
+                                                      'page_obj': page_obj,
+                                                      'is_paginated': is_paginated})
+
+
 class BookListView(generic.ListView):
     model = Book
     paginate_by = 9
@@ -78,6 +118,22 @@ class BookListView(generic.ListView):
 
 class BookDetailView(generic.DetailView):
     model = Book
+    # template_name = 'book_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(BookDetailView, self).get_context_data(**kwargs)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        print(request.POST)
+        if request.POST.get('add_to_cart'):
+            cart = Cart()
+            cart.books = Book.objects.get(id=request.POST.get('add_to_cart'))
+            cart.user = User.objects.get(id=request.POST.get('user'))
+            cart.save()
+        self.object = self.get_object()
+        context = super(BookDetailView, self).get_context_data(**kwargs)
+        return self.render_to_response(context=context)
 
 
 class AuthorListView(generic.ListView):

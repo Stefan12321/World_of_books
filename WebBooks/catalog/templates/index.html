@@ -1,6 +1,7 @@
 {% extends "base_generic.html" %}
-
+{% block sidebar %}{% endblock sidebar %}
 {% block content %}
+<div class="container bootstrap snipets">
 <h1>Main page</h1>
     <p>Welcome to the main page of the <em>Word of books</em>.
         This is very simple site, writen by Django framework</p>
@@ -13,4 +14,6 @@
         <li><strong>Number of authors:</strong>{{ num_authors }}</li>
     </ul>
     <p>Number of visits: {{ num_visits }}</p>
+    <p>{{ cart }}</p>
+</div>
 {% endblock %}
