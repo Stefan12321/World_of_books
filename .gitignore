@@ -1,3 +1,6 @@
 venv
 .idea
 main.py
+__pycache__
+catalog/__pycache__
+WebBooks/__pycache__

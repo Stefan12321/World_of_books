@@ -1,17 +1,28 @@
+import random
+
 from django.shortcuts import render
 from django.http import *
 from .forms import AuthorsForm
 from django.views import generic
 from .models import Book, Author, BookInstance, Genre, Cart
 from django.core.paginator import Paginator
+from django.core.exceptions import ValidationError
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import Book
 
 
 def index(request):
+    books = []
+    all_books = Book.objects.all()
+    while len(books) < 12:
+        book = random.choice(all_books)
+        if book not in books:
+            books.append(book)
+    print(books)
     num_books = Book.objects.all().count()
     num_instances = BookInstance.objects.all().count()
     num_instances_available = BookInstance.objects.filter(status__exact=2).count()
@@ -22,13 +33,10 @@ def index(request):
                                                   'num_instances': num_instances,
                                                   'num_instances_available': num_instances_available,
                                                   'num_authors': num_authors,
-                                                  'num_visits': num_visits})
-
-
-def reset_password(request):
-    if request.method == "POST":
-        print('reset password')
-    return render(request, 'registration/reset_password.html')
+                                                  'num_visits': num_visits,
+                                                  'books': books[:4],
+                                                  'books2': books[4:8],
+                                                  'books3': books[8:]})
 
 
 def cart(request):
@@ -97,18 +105,54 @@ def authors_add(request):
 
 
 def book_list(request):
+    print('GET: ',request.GET)
+    print('POST: ', request.POST)
+    # print(request.get_full_path())
+    # print(dir(request))
     books = Book.objects.all()
+    filters = []
+    if request.method == 'GET':
+        genres_filter = request.GET.getlist('genres')
+        authors_filter = request.GET.getlist('authors')
+        filters += genres_filter + authors_filter
+        genre_id_list = []
+        authors_id_list = []
+        # books = Book.objects
+        if genres_filter:
+            for genre in genres_filter:
+                try:
+                    genre_id_list.append(Genre.objects.get(name=genre))
+                except Genre.DoesNotExist:
+                    pass
+            books = Book.objects.filter(genre__in=genre_id_list)
+        if authors_filter:
+            for author in authors_filter:
+                try:
+                    authors_id_list.append(Author.objects.get(first_name=author))
+                except Genre.DoesNotExist:
+                    pass
+                books = books.filter(author__in=authors_id_list)
     genres = Genre.objects.all()
     authors = Author.objects.all()
-    paginator = Paginator(books, 24)  # Show 6 books per page.
+    paginator = Paginator(books, 9)  # Show 9 books per page.
     is_paginated = True if paginator.num_pages > 1 else False
     page_number = request.GET.get('page')
+    print('page_number',page_number)
     page_obj = paginator.get_page(page_number)
+    page_range = list(paginator.page_range)
+    # print(page_range)
     return render(request, 'catalog/book_list.html', {'book_list': books,
                                                       'genres': genres,
                                                       'authors': authors,
                                                       'page_obj': page_obj,
-                                                      'is_paginated': is_paginated})
+                                                      'page_range': page_range,
+                                                      'is_paginated': is_paginated,
+                                                      'filters': filters
+                                                        })
+
+
+def about_us(request):
+    return render(request, 'about_us.html')
 
 
 class BookListView(generic.ListView):
@@ -138,7 +182,7 @@ class BookDetailView(generic.DetailView):
 
 class AuthorListView(generic.ListView):
     model = Author
-    paginate_by = 4
+    paginate_by = 10
 
 
 class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):

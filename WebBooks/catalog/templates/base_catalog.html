@@ -1,83 +1,138 @@
 {% extends 'base_generic.html' %}
 {% load static %}
+{% load my_filters %}
+{% block head %}
+<style>
+    .anyClass {
+        height:150px;
+        overflow-y: scroll;
+      }
+</style>
+<script>
+    function GetCheckbuttonState(){
+        var genres = document.getElementsByName("genres");
+        var authors = document.getElementsByName("authors");
+        var genresPath = "/books/?genres=";
+        var authorsPath = "/books/?authors=";
+        var path = "/books/";
+        for (var i = 0; i < genres.length; ++i) {
+            var item = genres[i];  // Вызов myNodeList.item(i) необязателен в JavaScript
+            
+            if (item.checked) {
+                if (path === "/books/"){
+                    path = genresPath + item.value;
+                }
+                else{
+                    path = path + "&genres=" + item.value;
+                }
+            }
+        }
+        for (var i = 0; i < authors.length; ++i) {
+            var item = authors[i];  // Вызов myNodeList.item(i) необязателен в JavaScript
+            
+            if (item.checked) {
+                if (path === "/books/"){
+                    path = authorsPath + item.value;
+                }
+                else{
+                    path = path + "&authors=" + item.value;
+                }
+            }
+        }
+            console.log(path);
+            var button = document.getElementById("myLink");
+            button.href = path;
+            var nextPageButton = document.getElementById("nextPageButton");
+            return path;
+          }
+        
+            
+        
+</script>
+{% endblock head %}
 {% block sidebar %}
   <p>
-    <a class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample"
-        aria-expanded="false" aria-controls="collapseWidthExample">
+    <a class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSideBar"
+        aria-expanded="true" aria-controls="collapseSideBar">
         <img class="bi" width="24" height="24" role="img" aria-label="Home"
             src="{% static 'bootstrap-icons-1.8.1/list.svg' %}" alt="">
     </a>
 </p>
 <div class="w-auto">
-    <div class=" collapse collapse-horizontal" id="collapseWidthExample">
+    <div class=" collapse show collapse-horizontal" id="collapseSideBar">
         <div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 200px;">
             <a href="/"
                 class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
                 <svg class="bi me-2" width="40" height="32">
                     <use xlink:href="#bootstrap"></use>
                 </svg>
-                <span class="fs-4">Sidebar</span>
+                <span class="fs-4">Filters</span>
             </a>
             <hr>
-            <ul class="list-unstyled ps-0">
-                <li class="mb-1">
-                  <button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
-                    <img src="{% static 'bootstrap-icons-1.8.1/chevron-down.svg' %}" alt="SomeAlternateText">
-                    Genres
-                  </button>
-                  <div class="collapse show" id="home-collapse" style="">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        {% for genre in genres %}
-                            <li><input type="checkbox" value="{{genre.name}}">{{genre.name}}</li>
-                        {% endfor %}
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <ul class="list-unstyled ps-0">
+                        <li class="mb-1">
+                        <button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true" type="button">
+                            <img src="{% static 'bootstrap-icons-1.8.1/chevron-down.svg' %}" alt="SomeAlternateText">
+                            Genres
+                        </button>
+                        <div class="collapse show" id="home-collapse" style="">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                {% for genre in genres %}
+                                    <li>
+                                        {% comment %} <a href="{{ request.get_full_path }}?genre={{genre.name}}&">{{genre.name}}</a> {% endcomment %}
+                                        <input type="checkbox" name="genres" value="{{genre.name}}" onchange="GetCheckbuttonState()" {% if genre.name in filters %}checked{% endif %} >{{genre.name}}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        </li>
+                        <li class="mb-1">
+                        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false" type="button">
+                            <img src="{% static 'bootstrap-icons-1.8.1/chevron-down.svg' %}" alt="SomeAlternateText">
+                            Authors
+                        </button>
+                        <div class="collapse" id="dashboard-collapse" style="">
+                            <div class="anyClass">
+                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                    {% for author in authors %}
+                                    <li><input type="checkbox" name="authors" value="{{author.first_name}}" {% if author.first_name in filters %}checked{% endif %}>{{author.first_name}} {{author.last_name}}</li>
+                                {% endfor %}
+                                
+                                </ul>
+                            </div>
+                        </div>
+                        </li>
+                        <hr>
+                        <li class="mb-1 text-center">
+                            <a id="myLink" class="btn btn-outline-success" href="/books/" >Submit</a>
+                        </li>
                     </ul>
-                  </div>
-                </li>
-                <li class="mb-1">
-                  <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
-                    <img src="{% static 'bootstrap-icons-1.8.1/chevron-down.svg' %}" alt="SomeAlternateText">
-                    Authors
-                  </button>
-                  <div class="collapse" id="dashboard-collapse" style="">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        {% for author in authors %}
-                        <li><input type="checkbox" value="{{author.first_name}}">{{author.first_name}} {{author.last_name}}</li>
-                    {% endfor %}
-                    </ul>
-                  </div>
-                </li>
-                <li class="mb-1">
-                  <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
-                    <img src="{% static 'bootstrap-icons-1.8.1/chevron-down.svg' %}" alt="SomeAlternateText">
-                    Orders
-                  </button>
-                  <div class="collapse" id="orders-collapse">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                      <li><a href="#" class="link-dark rounded">New</a></li>
-                      <li><a href="#" class="link-dark rounded">Processed</a></li>
-                      <li><a href="#" class="link-dark rounded">Shipped</a></li>
-                      <li><a href="#" class="link-dark rounded">Returned</a></li>
-                    </ul>
-                  </div>
-                </li>
-                <li class="border-top my-3"></li>
-                <li class="mb-1">
-                  <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
-                    Account
-                  </button>
-                  <div class="collapse" id="account-collapse">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                      <li><a href="#" class="link-dark rounded">New...</a></li>
-                      <li><a href="#" class="link-dark rounded">Profile</a></li>
-                      <li><a href="#" class="link-dark rounded">Settings</a></li>
-                      <li><a href="#" class="link-dark rounded">Sign out</a></li>
-                    </ul>
-                  </div>
-                </li>
-              </ul>
-            <hr>
+                </form>
         </div>
     </div>
 </div>
 
 {% endblock sidebar %}
+
+{% block pagination %}
+{% if is_paginated %}
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}" >
+        <a class="page-link" {% if page_obj.has_previous %}href="{{ request.path }}?page={{ page_obj.previous_page_number }}{{request.get_full_path|cut:"?page="|super_cut:page_obj.number|super_cut:"/books/"|parce}}" {% endif %} tabindex="-1">Previous</a>
+    </li>
+    {% for page in page_range %}
+        <li class="page-item {% if page_obj.number == page %}active{% endif %}">
+            <a class="page-link" href="{{ request.path }}?page={{page}}{{request.get_full_path|cut:"?page="|super_cut:page_obj.number|super_cut:"/books/"|parce}}">{{page}}</a>
+        </li>
+    {% endfor %}
+
+    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+        <a class="page-link" id="nextPageButton" {% if page_obj.has_next %}href="{{ request.path }}?page={{ page_obj.next_page_number }}{{request.get_full_path|cut:"?page="|super_cut:page_obj.number|super_cut:"/books/"|parce}}" {% endif %}>Next</a>
+    </li>
+    </ul>
+</nav>
+{% endif %}
+{% endblock pagination %}

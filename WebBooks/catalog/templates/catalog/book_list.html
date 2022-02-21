@@ -9,19 +9,18 @@
             {% for book in page_obj %}
             
              <div class="col-xs-6 col-md-4">
-                <div class="product tumbnail thumbnail-3">
-                    <div class="card" style="width: 14rem;">
+                    <div class="card h-100" style="width: 14rem;">
                         <a href="{{ book.get_absolute_url }}">
                             <img  class="card-img-top" src="{{ book.get_image }}" alt="" height=320 width=212>
                         </a>
                         <div class="card-body">
                             <div class="caption">
                             <h6>{{ book.title }}</h6><span class="price">
-                                </span><span class="price sale">${{ book.price }}</span>
+                                <span class="price">Price</span>
+                                <span class="price sale">${{ book.price }}</span>
                             </div>
                         </div>
                     </div>
-                </div>
             </div>  
             {% endfor %}
         

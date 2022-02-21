@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from catalog import views
+from registration import views as reg_views
 from django.urls import include, re_path, path
 
 from django.conf import settings
@@ -23,6 +24,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('', views.index, name='index'),
     path('admin/', admin.site.urls),
+    path('sign_up/', reg_views.sign_up, name="sign_up"),
+    path('about_us/', views.about_us, name="about_us"),
     path('authors_add/', views.authors_add, name="authors_add"),
     path('accounts/', include('django.contrib.auth.urls')),
     path('edit1/<int:id>/', views.edit1, name="edit1"),
