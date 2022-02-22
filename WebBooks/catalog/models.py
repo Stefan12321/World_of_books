@@ -10,6 +10,9 @@ class Genre(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ['-id']
+
 
 class Language(models.Model):
     name = models.CharField(max_length=20, help_text="Enter a book language", verbose_name="Book language")
@@ -32,6 +35,9 @@ class Author(models.Model):
 
     def __str__(self):
         return self.last_name
+
+    class Meta:
+        ordering = ['-id']
 
 
 class Book(models.Model):
@@ -72,6 +78,9 @@ class Book(models.Model):
 
     def get_image(self):
         return f'/media/{self.image}/'
+
+    class Meta:
+        ordering = ['-id']
 
 
 class Cart(models.Model):

@@ -22,7 +22,7 @@ def index(request):
         book = random.choice(all_books)
         if book not in books:
             books.append(book)
-    print(books)
+    # print(books)
     num_books = Book.objects.all().count()
     num_instances = BookInstance.objects.all().count()
     num_instances_available = BookInstance.objects.filter(status__exact=2).count()
@@ -54,9 +54,9 @@ def cart(request):
                 book.quantity = book.quantity - 1
                 book.save()
         elif request.POST.get('quantity'):
-            print(request.POST)
+            # print(request.POST)
             book = Cart.objects.get(id=request.POST.get('book_id'))
-            if int(request.POST.get('book_id')) > 1:
+            if int(request.POST.get('book_id')) > 0:
                 book.quantity = int(request.POST.get('quantity'))
                 book.save()
     cart = Cart.objects.filter(user__exact=request.user.id)
@@ -94,7 +94,7 @@ def edit1(request, id):
         author.save()
         return HttpResponseRedirect("/authors_add/")
     else:
-        print(author.date_of_birth)
+        # print(author.date_of_birth)
         return render(request, "edit1.html", {"author": author})
 
 
@@ -105,8 +105,8 @@ def authors_add(request):
 
 
 def book_list(request):
-    print('GET: ',request.GET)
-    print('POST: ', request.POST)
+    # print('GET: ',request.GET)
+    # print('POST: ', request.POST)
     # print(request.get_full_path())
     # print(dir(request))
     books = Book.objects.all()
@@ -137,7 +137,7 @@ def book_list(request):
     paginator = Paginator(books, 9)  # Show 9 books per page.
     is_paginated = True if paginator.num_pages > 1 else False
     page_number = request.GET.get('page')
-    print('page_number',page_number)
+    # print('page_number',page_number)
     page_obj = paginator.get_page(page_number)
     page_range = list(paginator.page_range)
     # print(page_range)
@@ -148,7 +148,7 @@ def book_list(request):
                                                       'page_range': page_range,
                                                       'is_paginated': is_paginated,
                                                       'filters': filters
-                                                        })
+                                                      })
 
 
 def about_us(request):
@@ -162,6 +162,7 @@ class BookListView(generic.ListView):
 
 class BookDetailView(generic.DetailView):
     model = Book
+
     # template_name = 'book_detail.html'
 
     def get_context_data(self, **kwargs):
@@ -169,7 +170,7 @@ class BookDetailView(generic.DetailView):
         return context
 
     def post(self, request, *args, **kwargs):
-        print(request.POST)
+        # print(request.POST)
         if request.POST.get('add_to_cart'):
             cart = Cart()
             cart.books = Book.objects.get(id=request.POST.get('add_to_cart'))
@@ -189,7 +190,7 @@ class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
     """Универсальный класс представления списка книг,
     находящихся в заказе у текущего пользователя. """
     model = BookInstance
-    template_name ='catalog/bookinstance_list_borrowed_user.html'
+    template_name = 'catalog/bookinstance_list_borrowed_user.html'
     paginate_by = 10
 
     def get_queryset(self):

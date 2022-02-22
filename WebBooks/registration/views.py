@@ -8,8 +8,8 @@ from django.http import HttpResponseRedirect
 def sign_up(request):
     if request.method == "POST":
         register_form = RegisterForm(request.POST)
-        print(request.POST)
-        print(register_form.errors.values())
+        # print(request.POST)
+        # print(register_form.errors.values())
         if register_form.is_valid():
             register_form.fields['password'].widget.attrs.update({'class': 'form-control is-valid'})
             register_form.fields['confirm_password'].widget.attrs.update({'class': 'form-control is-valid'})
